@@ -1,4 +1,4 @@
-# Common Crawl web-graph embeddings
+# Common Crawl Web Graph Embeddings
 
 Dense vector representations of **52.9 million web hosts**, learned from the hyperlink structure of
 the Common Crawl host graph alone — no page content, no text, no features of any kind.
@@ -178,10 +178,10 @@ make test    # unit tests
 
 ## Citation
 
-If you use these embeddings, please cite the Common Crawl web graph release they are derived from,
+If you use these embeddings, please cite the Common Crawl Web Graph release they are derived from,
 and note the model as a LINE-1st / PyTorch-BigGraph-dot style shallow first-order embedding.
 
 ## License
 
-Apache-2.0 — see [`LICENSE`](LICENSE). The underlying Common Crawl host graph is published by the
+Apache-2.0 - see [`LICENSE`](LICENSE). The underlying Common Crawl host graph is published by the
 Common Crawl Foundation under its own terms.
