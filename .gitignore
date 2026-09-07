@@ -1,0 +1,15 @@
+# Anchored to the repo root: an unanchored `data/` would also match src/wgl/data/.
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+/data/
+/runs/
+/logs/
+
+# macOS Finder metadata.
+.DS_Store

@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="810" height="846" viewBox="0 0 810 846" role="img" aria-label="Architecture of the shipped web-graph embedding model">
+  <title>Architecture of the shipped web-graph embedding model</title>
+  <desc>A featureless embedding table of 52,913,544 rows by 128 dimensions (6.77 B parameters, 27.09 GB), sharded across 4 GPUs with WholeMemory. Each step looks up a source and destination row for a batch of 32,768 edges per rank, scores them with a dot product against 50 in-batch negatives, and optimises BCEWithLogits with WholeMemory sparse Adam. There is no message passing and no node features; the graph is not GPU-resident. Validated GraphSAGE and ComplEx variants are shown as alternatives that did not ship.</desc>
+  <rect x="0" y="0" width="810" height="846" fill="#ffffff" />
+  <text x="40" y="40" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="20" fill="#152a47" font-weight="600">A shallow graph embedding: one vector per host</text>
+  <text x="40" y="64" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="12.5" fill="#44536f">cc_deg8_shallow_full  ·  a learnable lookup table trained by link prediction  ·  LINE-1st / PBG-dot family</text>
+  <text x="40" y="88" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="9.5" fill="#6e7191" font-weight="600">1 · INPUT</text>
+  <rect x="40" y="96" width="730" height="62" fill="#f6f7fa" rx="8" stroke="#dde2e8" stroke-width="1" />
+  <text x="58" y="122" font-family="'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace" font-size="13" fill="#152a47" font-weight="600">host id  i</text>
+  <text x="58" y="142" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="11" fill="#44536f">row index into node_names.txt — 52,913,544 CC-reversed hostnames</text>
+  <rect x="492" y="110" width="262" height="34" fill="#ffffff" rx="6" stroke="#ff9220" stroke-width="1.5" />
+  <text x="623" y="126" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="10.5" fill="#ff9220" text-anchor="middle" font-weight="600">FEATURELESS — the id is the input</text>
+  <text x="623" y="139" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="9.5" fill="#6e7191" text-anchor="middle">no node features, no hostnames, no metadata</text>
+  <line x1="405" y1="158" x2="405" y2="173" stroke="#dde2e8" stroke-width="1.5" />
+  <polygon points="405,180 402.06,173 407.94,173" fill="#dde2e8" />
+  <text x="40" y="192" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="9.5" fill="#6e7191" font-weight="600">2 · PARAMETERS — THE WHOLE MODEL</text>
+  <rect x="40" y="200" width="730" height="168" fill="#f6f7fa" rx="8" stroke="#dde2e8" stroke-width="1" />
+  <rect x="58" y="216" width="694" height="52" fill="#0050bd" rx="6" />
+  <text x="74" y="239" font-family="'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace" font-size="15" fill="#ffffff" font-weight="600">nn.Embedding(52,913,544, 128)</text>
+  <text x="736" y="239" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="11.5" fill="#ffffff" text-anchor="end">6.77 B params · fp32 · 27.09 GB</text>
+  <text x="58" y="288" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="11" fill="#44536f">sharded across 4 x H100 85 GB by WholeMemory - gathered over NVLink</text>
+  <rect x="58" y="298" width="169" height="54" fill="#ffffff" rx="6" stroke="#dde2e8" stroke-width="1" />
+  <text x="142.5" y="316" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="10.5" fill="#44536f" text-anchor="middle" font-weight="600">rank 0</text>
+  <rect x="68" y="324" width="149" height="9" fill="#0050bd" rx="2" />
+  <text x="142.5" y="345" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="9.5" fill="#6e7191" text-anchor="middle">6.9 GB + ~14 GB Adam</text>
+  <rect x="233" y="298" width="169" height="54" fill="#ffffff" rx="6" stroke="#dde2e8" stroke-width="1" />
+  <text x="317.5" y="316" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="10.5" fill="#44536f" text-anchor="middle" font-weight="600">rank 1</text>
+  <rect x="243" y="324" width="149" height="9" fill="#0050bd" rx="2" />
+  <text x="317.5" y="345" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="9.5" fill="#6e7191" text-anchor="middle">6.9 GB + ~14 GB Adam</text>
+  <rect x="408" y="298" width="169" height="54" fill="#ffffff" rx="6" stroke="#dde2e8" stroke-width="1" />
+  <text x="492.5" y="316" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="10.5" fill="#44536f" text-anchor="middle" font-weight="600">rank 2</text>
+  <rect x="418" y="324" width="149" height="9" fill="#0050bd" rx="2" />
+  <text x="492.5" y="345" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="9.5" fill="#6e7191" text-anchor="middle">6.9 GB + ~14 GB Adam</text>
+  <rect x="583" y="298" width="169" height="54" fill="#ffffff" rx="6" stroke="#dde2e8" stroke-width="1" />
+  <text x="667.5" y="316" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="10.5" fill="#44536f" text-anchor="middle" font-weight="600">rank 3</text>
+  <rect x="593" y="324" width="149" height="9" fill="#0050bd" rx="2" />
+  <text x="667.5" y="345" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="9.5" fill="#6e7191" text-anchor="middle">6.9 GB + ~14 GB Adam</text>
+  <line x1="405" y1="368" x2="405" y2="383" stroke="#dde2e8" stroke-width="1.5" />
+  <polygon points="405,390 402.06,383 407.94,383" fill="#dde2e8" />
+  <text x="40" y="408" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="9.5" fill="#6e7191" font-weight="600">3 · ONE TRAINING STEP</text>
+  <rect x="40" y="416" width="730" height="140" fill="#f6f7fa" rx="8" stroke="#dde2e8" stroke-width="1" />
+  <rect x="58" y="438" width="118" height="74" fill="#ffffff" rx="6" stroke="#dde2e8" stroke-width="1.5" />
+  <text x="117" y="458" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="10" fill="#6e7191" text-anchor="middle" font-weight="600">edge batch</text>
+  <text x="117" y="478" font-family="'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" fill="#152a47" text-anchor="middle">32,768 / rank</text>
+  <text x="117" y="496" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="9.5" fill="#6e7191" text-anchor="middle">eff. 131,072</text>
+  <line x1="180" y1="475" x2="192" y2="475" stroke="#dde2e8" stroke-width="1.5" />
+  <polygon points="198,475 192,477.52 192,472.48" fill="#dde2e8" />
+  <rect x="202" y="438" width="118" height="74" fill="#ffffff" rx="6" stroke="#0050bd" stroke-width="1.5" />
+  <text x="261" y="458" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="10" fill="#6e7191" text-anchor="middle" font-weight="600">look up</text>
+  <text x="261" y="478" font-family="'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" fill="#152a47" text-anchor="middle">z_src = E[src]</text>
+  <text x="261" y="496" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="9.5" fill="#6e7191" text-anchor="middle">z_dst = E[dst]</text>
+  <line x1="324" y1="475" x2="336" y2="475" stroke="#dde2e8" stroke-width="1.5" />
+  <polygon points="342,475 336,477.52 336,472.48" fill="#dde2e8" />
+  <rect x="346" y="438" width="118" height="74" fill="#ffffff" rx="6" stroke="#dde2e8" stroke-width="1.5" />
+  <text x="405" y="458" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="10" fill="#6e7191" text-anchor="middle" font-weight="600">corrupt</text>
+  <text x="405" y="478" font-family="'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" fill="#152a47" text-anchor="middle">50 in-batch negs</text>
+  <text x="405" y="496" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="9.5" fill="#6e7191" text-anchor="middle">random dst from batch</text>
+  <line x1="468" y1="475" x2="480" y2="475" stroke="#dde2e8" stroke-width="1.5" />
+  <polygon points="486,475 480,477.52 480,472.48" fill="#dde2e8" />
+  <rect x="490" y="438" width="118" height="74" fill="#ffffff" rx="6" stroke="#0050bd" stroke-width="1.5" />
+  <text x="549" y="458" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="10" fill="#6e7191" text-anchor="middle" font-weight="600">score</text>
+  <text x="549" y="478" font-family="'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" fill="#152a47" text-anchor="middle">z_src . z_dst</text>
+  <text x="549" y="496" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="9.5" fill="#6e7191" text-anchor="middle">dot product</text>
+  <line x1="612" y1="475" x2="624" y2="475" stroke="#dde2e8" stroke-width="1.5" />
+  <polygon points="630,475 624,477.52 624,472.48" fill="#dde2e8" />
+  <rect x="634" y="438" width="118" height="74" fill="#ffffff" rx="6" stroke="#dde2e8" stroke-width="1.5" />
+  <text x="693" y="458" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="10" fill="#6e7191" text-anchor="middle" font-weight="600">loss</text>
+  <text x="693" y="478" font-family="'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" fill="#152a47" text-anchor="middle">BCEWithLogits</text>
+  <text x="693" y="496" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="9.5" fill="#6e7191" text-anchor="middle">sparse Adam</text>
+  <text x="58" y="540" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="11" fill="#44536f">WholeMemory sparse Adam   ·   lr 0.003, cosine to lr/100   ·   3 epochs   ·   9.70 M edges/s   ·   1 h 04 m 16 s</text>
+  <line x1="405" y1="556" x2="405" y2="571" stroke="#dde2e8" stroke-width="1.5" />
+  <polygon points="405,578 402.06,571 407.94,571" fill="#dde2e8" />
+  <text x="40" y="592" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="9.5" fill="#6e7191" font-weight="600">4 · THE RUN</text>
+  <rect x="40" y="600" width="730" height="116" fill="#f6f7fa" rx="8" stroke="#dde2e8" stroke-width="1" />
+  <text x="80" y="626" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="9.5" fill="#6e7191" font-weight="600">epoch</text>
+  <text x="250" y="626" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="9.5" fill="#6e7191" font-weight="600">train loss</text>
+  <text x="440" y="626" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="9.5" fill="#6e7191" font-weight="600">val MRR</text>
+  <line x1="64" y1="634" x2="746" y2="634" stroke="#e8ecf2" stroke-width="1" />
+  <text x="80" y="654" font-family="'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#44536f">1</text>
+  <text x="250" y="654" font-family="'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#44536f">0.7192</text>
+  <text x="440" y="654" font-family="'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#44536f">0.9529</text>
+  <text x="80" y="674" font-family="'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#44536f">2</text>
+  <text x="250" y="674" font-family="'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#44536f">0.6624</text>
+  <text x="440" y="674" font-family="'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#44536f">0.9564</text>
+  <text x="80" y="694" font-family="'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#152a47">3</text>
+  <text x="250" y="694" font-family="'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#152a47">0.6523</text>
+  <text x="440" y="694" font-family="'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#0050bd" font-weight="600">0.9574</text>
+  <text x="514" y="694" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="10" fill="#0050bd">best — restored before test</text>
+  <line x1="405" y1="716" x2="405" y2="731" stroke="#dde2e8" stroke-width="1.5" />
+  <polygon points="405,738 402.06,731 407.94,731" fill="#dde2e8" />
+  <text x="40" y="752" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="9.5" fill="#6e7191" font-weight="600">5 · PUBLISHED ARTIFACT</text>
+  <rect x="40" y="760" width="730" height="56" fill="#f6f7fa" rx="8" stroke="#dde2e8" stroke-width="1" />
+  <text x="58" y="785" font-family="'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12" fill="#152a47" font-weight="600">[52,913,544, 128] fp32  →  L2-normalise  →  fp16 Parquet shards</text>
+  <text x="58" y="803" font-family="'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="10.5" fill="#44536f">test MRR 0.9574  ·  hits@1 0.9386  ·  hits@10 0.9842  ·  commoncrawl/web-graph-embeddings</text>
+</svg>

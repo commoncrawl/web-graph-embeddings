@@ -1,0 +1,95 @@
+[project]
+name = "web-graph-embeddings"
+version = "1.0.0"
+description = "Reproduction pipeline for the Common Crawl host-graph embeddings."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "Apache-2.0" }
+
+# Deliberately small. The preprocessing and export stages are numpy + typer only; the GPU training
+# stack (torch, cuGraph-PyG, WholeGraph) lives in the container image, not in project metadata.
+dependencies = [
+    "numpy>=1.26",
+    "typer>=0.12",
+    "rich>=13.7",
+    "pyarrow>=16.0",    # Parquet shard export
+    "tldextract>=5.1",  # stable host/PLD release keys
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.6",
+    "pytest>=8.2",
+    "torch>=2.2",  # only for tests/test_cupyg_split.py, which imports the trainer's split helpers
+]
+
+[project.scripts]
+wgl = "wgl.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+exclude-newer = "7 days"
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/wgl"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+# Strict selection. Disable only rules that fight the project layout.
+select = [
+    "E", "W",      # pycodestyle
+    "F",           # pyflakes
+    "I",           # isort
+    "N",           # pep8-naming
+    "D",           # pydocstyle (google convention)
+    "UP",          # pyupgrade
+    "B",           # bugbear
+    "C4",          # comprehensions
+    "SIM",         # simplify
+    "ARG",         # unused arguments
+    "PTH",         # use pathlib
+    "RUF",         # ruff-specific
+    "ANN",         # annotations
+    "TID",         # tidy imports
+    "PL",          # pylint
+    "PERF",        # perflint
+]
+ignore = [
+    "ANN401",   # allow typing.Any where pragmatic (config overrides, registries)
+    "PLR0913",  # many-args is common for ML constructors/train loops
+    "PLR0917",  # ...same for positional-arg count (typer command signatures)
+    "PLR2004",  # magic values are readable in numeric/ML code
+    "PLR0912",  # branches: ingestion/CLI dispatch are inherently branchy
+    "PLR0915",  # statements: training loops are long but linear
+    "B008",     # typer uses function calls (Option/Argument) in defaults by design
+    "PLC0415",  # lazy imports are used deliberately (avoid cycles, defer heavy/optional deps)
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests need neither docstrings nor type annotations to be useful.
+"tests/**" = ["D", "ANN", "PLR2004", "S101"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "parents"
